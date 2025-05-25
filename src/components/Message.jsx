@@ -67,7 +67,7 @@ const Message = ({ message, isOwn }) => {
     >
       <div className={` ${isOwn ? "hidden" : "block"}`}>
         <p
-          className={`absolute text-nowrap text-left  top-0 left-12  z-50  text-sm text-gray-500`}
+          className={`absolute text-nowrap text-left  top-0 left-12  z-20  text-sm text-gray-500`}
         >
           {message.sender.displayName}
         </p>{" "}
