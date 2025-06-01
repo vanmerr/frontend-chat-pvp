@@ -1,17 +1,17 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect, useContext } from 'react';
 
+// Tạo AuthContext
 const AuthContext = createContext();
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
 
+
+// Provider chứa logic xử lý xác thực
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Kiểm tra người dùng đã đăng nhập khi tải trang
   useEffect(() => {
-    // Check if user is stored in sessionStorage
     const storedUser = sessionStorage.getItem('user');
     if (storedUser) {
       setCurrentUser(JSON.parse(storedUser));
@@ -19,21 +19,40 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
+  // Hàm đăng nhập
   const login = (userData) => {
     setCurrentUser(userData);
     sessionStorage.setItem('user', JSON.stringify(userData));
   };
 
+  // Hàm đăng xuất
   const logout = () => {
     setCurrentUser(null);
     sessionStorage.removeItem('user');
   };
 
+  // Cập nhật accessToken mới
+  const updateToken = (newAccessToken) => {
+    setCurrentUser((prev) => {
+      const updatedUser = {
+        ...prev,
+        user: {
+          ...prev.user,
+          accessToken: newAccessToken,
+        },
+      };
+      sessionStorage.setItem('user', JSON.stringify(updatedUser));
+      return updatedUser;
+    });
+  };
+
+  // Truyền giá trị context
   const value = {
     currentUser,
     login,
     logout,
-    loading
+    updateToken,
+    loading,
   };
 
   return (
@@ -41,4 +60,7 @@ export const AuthProvider = ({ children }) => {
       {!loading && children}
     </AuthContext.Provider>
   );
-}; 
+};
+
+// eslint-disable-next-line
+export const useAuth = () => useContext(AuthContext);

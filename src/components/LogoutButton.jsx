@@ -1,4 +1,3 @@
-
 import { useAuth } from '../contexts/AuthContext';
 import { FiLogOut } from 'react-icons/fi';
 

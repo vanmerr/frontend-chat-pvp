@@ -14,3 +14,4 @@ export const loginWithGoogle = async () => {
   const token = await user.getIdToken();
   return { user, token };
 };
+

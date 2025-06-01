@@ -97,9 +97,14 @@ const Room = ({ room = {}, currentUser = {}, onLeaveRoom = () => {} }) => {
 
   // Gửi tin nhắn (có thể kèm file)
   const handleSendMessage = async (messageData) => {
+    const user = {
+      uid: currentUser.uid,
+      displayName: currentUser.displayName,
+      photoURL: currentUser.photoURL,
+    }
     const msg = await sendMessageAPI(room.id, {
       text: messageData.text,
-      sender: currentUser.uid,
+      sender: user,
       files: messageData.files || [],
     });
     socketRef.current.emit("chat-message", room.id, msg);

@@ -11,6 +11,8 @@ const guessMimeType = (url) => {
   const ext = getExtension(url);
   if (["jpg", "jpeg", "png", "gif", "webp"].includes(ext))
     return "image/" + ext;
+  if (["mp4", "webm", "ogg"].includes(ext)) return "video/" + ext;
+  if (["mp3", "wav", "ogg"].includes(ext)) return "audio/" + ext;
   if (ext === "pdf") return "application/pdf";
   if (["doc", "docx"].includes(ext)) return "application/msword";
   if (["xls", "xlsx", "csv"].includes(ext)) return "application/vnd.ms-excel";
@@ -63,15 +65,14 @@ const Message = ({ message, isOwn }) => {
     <div
       className={`relative flex ${
         isOwn ? "justify-end" : "justify-start"
-      }  mb-4 animate-fade-in`}
+      } mb-4 animate-fade-in`}
     >
       <div className={` ${isOwn ? "hidden" : "block"}`}>
         <p
-          className={`absolute text-nowrap text-left  top-0 left-12  z-20  text-sm text-gray-500`}
+          className={`absolute text-nowrap text-left top-0 left-12 z-20 text-sm text-gray-500`}
         >
           {message.sender.displayName}
-        </p>{" "}
-        {/* Adjusted position */}
+        </p>
         <img
           src={message.sender.photoURL}
           alt={message.sender.displayName}
@@ -81,7 +82,7 @@ const Message = ({ message, isOwn }) => {
         />
       </div>
       <div
-        className={`relative min-w-[50px] mt-6 ml-3 max-w-lg md:max-w-md max-sm:max-w-[300px]  chat-bubble ${
+        className={`relative min-w-[50px] mt-6 ml-3 max-w-lg md:max-w-md max-sm:max-w-[250px] chat-bubble ${
           isOwn ? "chat-bubble-sent" : "chat-bubble-received"
         }`}
       >
@@ -103,7 +104,7 @@ const Message = ({ message, isOwn }) => {
 
         {/* Files Section */}
         {message.files && message.files.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-2">
+          <div className="flex w-[450px] flex-wrap gap-3 mb-2">
             {message.files.map((url, index) => {
               const type = guessMimeType(url);
               const name = guessFileName(url);
@@ -114,7 +115,8 @@ const Message = ({ message, isOwn }) => {
                     <img
                       src={url}
                       alt={name}
-                      className="w-20 h-20 object-cover rounded-lg border border-gray-200 shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
+                      style={{ width: 160, height: 120 }}
+                      className="object-cover rounded-lg border border-gray-200 shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
                       onClick={() => handleImageClick(url)}
                     />
                     <button
@@ -126,11 +128,50 @@ const Message = ({ message, isOwn }) => {
                     </button>
                   </div>
                 );
+              } else if (type.startsWith("video/")) {
+                return (
+                  <div
+                    key={index}
+                    className="relative w-full h-[320px] group rounded-lg border border-gray-200 shadow-sm"
+                  >
+                    <video
+                      src={url}
+                      controls
+                      className="w-full h-full object-cover cursor-pointer"
+                    />
+                    <button
+                      onClick={() => handleDownload(url)}
+                      className="absolute top-2 right-2 bg-black/50 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      title="Download"
+                    >
+                      <FiDownload />
+                    </button>
+                  </div>
+                );
+              } else if (type.startsWith("audio/")) {
+                return (
+                  <div
+                    key={index}
+                    className="flex w-full items-center bg-white/10 rounded-lg px-3 py-2 gap-2 border border-gray-200 max-w-[400px]"
+                  >
+                    <audio controls className="w-full"  preload="metadata">
+                      <source src={url} type={type} />
+                      Your browser does not support the audio element.
+                    </audio>
+                    <button
+                      onClick={() => handleDownload(url)}
+                      className="p-1 hover:bg-white/10 rounded-full transition-colors"
+                      title="Download"
+                    >
+                      <FiDownload />
+                    </button>
+                  </div>
+                );
               } else {
                 return (
                   <div
                     key={index}
-                    className="flex items-center bg-white/10 rounded-lg px-3 py-2 gap-2 border border-gray-200"
+                    className="flex items-center bg-white/10 rounded-lg px-3 py-2 gap-2 border border-gray-200 max-w-[250px]"
                   >
                     {getFileIcon(type)}
                     <div className="min-w-0">

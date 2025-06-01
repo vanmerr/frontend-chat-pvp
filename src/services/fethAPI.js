@@ -56,7 +56,6 @@ export const sendMessage = async (roomId, { text, sender, files }) => {
         const response = await axios.post(`${API_URL}/message/${roomId}`, formData, {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
-        console.log('Response from sendMessage:', formData.get('sender'));
         return response.data.message;
     } else {
         // Không có file, gửi JSON bình thường
